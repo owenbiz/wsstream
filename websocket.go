@@ -13,9 +13,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
 	"golang.org/x/time/rate"
 
 	"github.com/samber/lo"
@@ -203,7 +200,6 @@ func (m *message) reset(messageType int, data []byte) *message {
 }
 
 type Options struct {
-	Logger       *zap.Logger
 	ReadSize     int
 	ReadLimiter  *rate.Limiter
 	WriteSize    int
@@ -211,12 +207,6 @@ type Options struct {
 }
 
 type OptionsHandler func(o *Options)
-
-func WithLogger(logger *zap.Logger) OptionsHandler {
-	return func(o *Options) {
-		o.Logger = logger
-	}
-}
 
 func WithReadSize(size int) OptionsHandler {
 	return func(o *Options) {
@@ -476,12 +466,6 @@ func (c *Connection) RemoteAddr() net.Addr {
 
 func (c *Connection) SubProtocol() string {
 	return c.conn.Subprotocol()
-}
-
-func (c *Connection) log(level zapcore.Level, msg string, fields ...zap.Field) {
-	if c.options.Logger != nil {
-		c.options.Logger.Log(level, msg, fields...)
-	}
 }
 
 func (c *Connection) run(ctx context.Context, conn *websocket.Conn, listener IListener) error {
