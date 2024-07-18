@@ -17,7 +17,7 @@ type IBuild interface {
 }
 
 type IRetry interface {
-	Retry(context.Context)
+	Retry(context.Context, uint, error)
 }
 
 type IRelease interface {
@@ -144,7 +144,7 @@ func (s *Stream) Start(ctx context.Context, rawURL string, options ...OptionsHan
 			lo.ForEach(lo.Reverse(s.events), func(e any, _ int) {
 				impl, ok := e.(IRetry)
 				if ok {
-					impl.Retry(ctx)
+					impl.Retry(ctx, n, err)
 				}
 			})
 		}),
